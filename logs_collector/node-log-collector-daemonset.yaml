@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: nodelog
-  namespace: ${NAMESPACE}
+  namespace: castai-agent
   labels:
     app: nodelog
 spec:

@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: nodelog
+  name: node-log-collector
   namespace: castai-agent
   labels:
-    app: nodelog
+    app.kubernetes.io/name: node-log-collector
 spec:
   selector:
     matchLabels:
-      app: nodelog
+      app.kubernetes.io/name: node-log-collector
   template:
     metadata:
       labels:
-        app: nodelog
+        app.kubernetes.io/name: node-log-collector
     spec:
       containers:
       - image: ubuntu

@@ -1,65 +1,49 @@
 #!/bin/bash
-# Only an initial POC boiler plate script to test if we can
-# collect kubelet logs by deploying a daemonset and then
-# exec into each daemonset pods to collect the journalctl logs output
-
 set -euo pipefail
 
 # Create temp directory
 TMP_DIR=$(mktemp -d -t node-logs)
-trap cleanup SIGINT SIGTERM EXIT
+# trap $(rm -r $TMP_DIR) SIGINT SIGTERM EXIT
 
-echo $TMP_DIR
-
-cleanup() {
-    rm -rf $TMP_DIR
-    exit
-}
-
-DATE=$(date -u +%Y-%m-%dT%H:%M:%S)
-
+DATE=$(date -u +%Y-%m-%dT%H:%M:%S | tr -d ":" | tr -d "-")
+CLUSTERNAME=$(kubectl config view --minify -o jsonpath={'.clusters[].name'} | tr -d '[:space:]' | tr -d "-" | tr -d "." | cut -c1-15)
 CONTEXT=$(kubectl config current-context)
+NODE_COUNT=$(kubectl get nodes -o jsonpath='{.items[*].metadata.name}' | wc -w)
 echo "Using current context: $CONTEXT"
 
-CLUSTERINFO=$(kubectl cluster-info)
-# Deploy daemonset debugger-sh.yaml
 echo "Deploying node-log-collector-daemonset"
 kubectl apply -f https://raw.githubusercontent.com/castai/scripts/refs/heads/feature/log_collector/logs_collector/node-log-collector-daemonset.yaml
-# kubectl apply -f node-log-collector-daemonset.yaml
+kubectl apply -f node-log-collector-daemonset.yaml
+# trap $(kubectl delete -f node-log-collector-daemonset.yaml --now) SIGINT SIGTERM EXIT
 sleep 10
+
+POD_COUNT=$(kubectl get daemonset node-log-collector -o jsonpath='{.status.numberReady}')
+while [ "$POD_COUNT" -ne "$NODE_COUNT" ]; do
+    echo "Waiting for all daemonset pods to be ready"
+    sleep 5
+    POD_COUNT=$(kubectl get daemonset node-log-collector -o jsonpath='{.status.numberReady}')
+done
 
 # Get all daemonset pods
 unset COLLECTORDS
-COLLECTORDS=$(kubectl get pods -n castai-agent -l app=nodelog -o jsonpath='{.items[*].metadata.name}')
+COLLECTORDS=$(kubectl get pods -n castai-agent -l app.kubernetes.io/name=node-log-collector -o jsonpath='{.items[*].metadata.name}')
 if [ -z "$COLLECTORDS" ]; then
-    echo "Unable to deploy daemonset"
+    echo "Unable to deploy daemonset" 
     exit 1
 fi
 
-echo "Collecting kubelet logs"
+echo "Collecting node logs"
 # Loop through all nodes
 for POD in $COLLECTORDS; do
     NODENAME=$(kubectl get pod $POD -n castai-agent -o jsonpath='{.spec.nodeName}')
     kubectl exec -n castai-agent $POD -- chroot /host /bin/bash -c "journalctl -u kubelet" > $TMP_DIR/$NODENAME-kubelet.log
-done
-
-echo "Collecting containerd logs"
-# Loop through all nodes
-for POD in $COLLECTORDS; do
-    NODENAME=$(kubectl get pod $POD -n castai-agent -o jsonpath='{.spec.nodeName}')
     kubectl exec -n castai-agent $POD -- chroot /host /bin/bash -c "journalctl -u containerd" > $TMP_DIR/$NODENAME-containerd.log
 done
 
-# Check logs 
-ls -l $TMP_DIR
-
 # Zip all logs
 echo "Zipping all logs"
-tar -czf "${DATE}node-logs.tar.gz" $TMP_DIR
+tar -czf "${DATE}-${CLUSTERNAME}-logs.tar.gz" $TMP_DIR
 
 # Cleanup
-echo "Cleaning up"
-rm -rf $TMP_DIR
-
 kubectl delete -f https://raw.githubusercontent.com/castai/scripts/refs/heads/feature/log_collector/logs_collector/node-log-collector-daemonset.yaml --now
 # kubectl delete -f node-log-collector-daemonset.yaml --now

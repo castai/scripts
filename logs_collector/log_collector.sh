@@ -24,8 +24,8 @@ echo "Using current context: $CONTEXT"
 CLUSTERINFO=$(kubectl cluster-info)
 # Deploy daemonset debugger-sh.yaml
 echo "Deploying node-log-collector-daemonset"
-# kubectl apply -f https://raw.githubusercontent.com/castai/scripts/refs/heads/feature/log_collector/logs_collector/node-log-collector-daemonset.yaml
-kubectl apply -f node-log-collector-daemonset.yaml
+kubectl apply -f https://raw.githubusercontent.com/castai/scripts/refs/heads/feature/log_collector/logs_collector/node-log-collector-daemonset.yaml
+# kubectl apply -f node-log-collector-daemonset.yaml
 sleep 10
 
 # Get all daemonset pods
@@ -61,5 +61,5 @@ tar -czf "${DATE}node-logs.tar.gz" $TMP_DIR
 echo "Cleaning up"
 rm -rf $TMP_DIR
 
-# kubectl delete -f https://raw.githubusercontent.com/castai/scripts/refs/heads/feature/log_collector/logs_collector/node-log-collector-daemonset.yaml --now
-kubectl delete -f node-log-collector-daemonset.yaml --now
+kubectl delete -f https://raw.githubusercontent.com/castai/scripts/refs/heads/feature/log_collector/logs_collector/node-log-collector-daemonset.yaml --now
+# kubectl delete -f node-log-collector-daemonset.yaml --now

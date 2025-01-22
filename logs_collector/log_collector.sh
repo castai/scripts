@@ -13,7 +13,6 @@ echo "Using current context: $CONTEXT"
 
 echo "Deploying node-log-collector-daemonset"
 kubectl apply -f https://raw.githubusercontent.com/castai/scripts/refs/heads/feature/log_collector/logs_collector/node-log-collector-daemonset.yaml
-kubectl apply -f node-log-collector-daemonset.yaml
 # trap $(kubectl delete -f node-log-collector-daemonset.yaml --now) SIGINT SIGTERM EXIT
 sleep 10
 
@@ -46,4 +45,4 @@ tar -czf "${DATE}-${CLUSTERNAME}-logs.tar.gz" $TMP_DIR
 
 # Cleanup
 kubectl delete -f https://raw.githubusercontent.com/castai/scripts/refs/heads/feature/log_collector/logs_collector/node-log-collector-daemonset.yaml --now
-# kubectl delete -f node-log-collector-daemonset.yaml --now
+

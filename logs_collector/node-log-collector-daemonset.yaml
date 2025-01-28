@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: node-log-collector
-  namespace: castai-agent
   labels:
     app.kubernetes.io/name: node-log-collector
 spec:

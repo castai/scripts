@@ -6,7 +6,7 @@ TMP_DIR=$(mktemp -d -t node-logs)
 # trap $(rm -r $TMP_DIR) SIGINT SIGTERM EXIT
 
 DEFAULT_NS="castai-agent"
-NAMESPACE="${1:=$DEFAULT_NS}"
+NAMESPACE="${1:-$DEFAULT_NS}"
 DATE=$(date -u +%Y-%m-%dT%H:%M:%S | tr -d ":" | tr -d "-")
 CLUSTERNAME=$(kubectl config view --minify -o jsonpath={'.clusters[].name'} | tr -d '[:space:]' | tr -d "-" | tr -d "." | cut -c1-15)
 CONTEXT=$(kubectl config current-context)
@@ -14,7 +14,8 @@ NODE_COUNT=$(kubectl get nodes -o jsonpath='{.items[*].metadata.name}' | wc -w)
 echo "Using current context: $CONTEXT"
 
 echo "Deploying node-log-collector-daemonset"
-kubectl apply -f https://raw.githubusercontent.com/castai/scripts/refs/heads/feature/log_collector/logs_collector/node-log-collector-daemonset.yaml
+kubectl apply -n $NAMESPACE -f https://raw.githubusercontent.com/castai/scripts/refs/heads/feature/log_collector/logs_collector/node-log-collector-daemonset.yaml
+# kubectl apply -n $NAMESPACE -f node-log-collector-daemonset.yaml
 # trap $(kubectl delete -f node-log-collector-daemonset.yaml --now) SIGINT SIGTERM EXIT
 sleep 10
 
@@ -47,3 +48,4 @@ tar -czf "${DATE}-${CLUSTERNAME}-logs.tar.gz" $TMP_DIR
 
 # Cleanup
 kubectl delete -n $NAMESPACE -f https://raw.githubusercontent.com/castai/scripts/refs/heads/feature/log_collector/logs_collector/node-log-collector-daemonset.yaml --now
+# kubectl delete -n $NAMESPACE -f node-log-collector-daemonset.yaml --now

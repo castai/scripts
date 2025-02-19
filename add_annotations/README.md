@@ -1,8 +1,17 @@
-# Kubernetes Annotation Restoration Tools
+# Kubernetes Annotation Restoration and Backup Tools
 
-This repository contains two Python scripts designed to detect and restore missing annotations on Kubernetes Deployments by referencing ConfigMaps.
+This repository provides tools for:
+- **Restoring missing annotations** on Kubernetes Deployments
+- **Backing up and rolling back Deployments** to a stable state
 
-## Scripts Overview
+
+
+---
+
+## **Scripts Overview**
+
+### **Annotation Management Scripts**
+These scripts are used to **fetch, map, and restore missing annotations** from ConfigMaps to Kubernetes Deployments.
 
 - **`get-annotations.py`**  
   - Fetches all ConfigMaps and Deployments within a specified namespace.
@@ -17,13 +26,10 @@ This repository contains two Python scripts designed to detect and restore missi
   - Reads `annotations_output.json`.
   - Applies missing annotations to the corresponding Deployments using `kubectl annotate`.
   - Ensures existing annotations are not re-applied unnecessarily.
+  - Supports a **dry-run mode** that previews changes before applying.
+  - Tracks **deployment revision history** and forces a new revision if necessary.
 
-## 🛠 Prerequisites
-
-- **Python 3.x** installed
-- **`kubectl`** installed and configured for your cluster
-- Sufficient permissions to **view and modify** ConfigMaps and Deployments
-
+---
 ## Usage
 
 1. **Fetch and Map Missing Annotations:**  

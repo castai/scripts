@@ -25,6 +25,6 @@ This repository contains two Python scripts that work together to detect and res
 
 
 2. **Add Missing Annotations:**  
-   Run the first script to get :
+   Run the second script to get :
    ```bash
    ./apply_annotations.py

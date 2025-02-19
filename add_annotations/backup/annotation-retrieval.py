@@ -40,13 +40,13 @@ def extract_annotations(file_path):
                         for owner in metadata["ownerReferences"]:
                             if owner.get("kind", "").lower() in {"deployment", "statefulset"}:
                                 kind = owner["kind"].lower()
-                                print(f"🔍 Found StatefulSet via ownerReferences: {name}")
+                                print(f"Found StatefulSet via ownerReferences: {name}")
                                 break  # Stop once we find the relevant owner kind
 
                     if kind in {"deployment", "statefulset"}:
                         found_resources[kind] += 1  # Count workloads
 
-                        print(f"✅ Detected {kind}: {name} in {namespace}")
+                        print(f"Detected {kind}: {name} in {namespace}")
 
                         # Print all annotations before filtering
                         print(f"🛠 Checking annotations for {kind}: {name} in {namespace}")

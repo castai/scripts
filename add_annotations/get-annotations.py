@@ -1,7 +1,14 @@
 import subprocess
 import json
+import argparse
 
-NAMESPACE = "test-namespace"
+# List of required annotations to search for
+REQUIRED_ANNOTATIONS = [
+    "com.fico.dmp/component-descriptor",
+    "com.fico.dmp/engine-descriptor",
+    "com.fico.dmp/idle-config-annotation"
+]
+
 OUTPUT_FILE = "annotations.json"
 
 def run_command(cmd):
@@ -13,67 +20,80 @@ def run_command(cmd):
     except subprocess.CalledProcessError as e:
         print(f"Error executing {cmd}: {e}")
         return None
+    except json.JSONDecodeError:
+        print(f"Error decoding JSON output from command: {cmd}")
+        return None
 
-def get_configmaps():
-    """Fetch all ConfigMaps in the namespace."""
-    cmd = f'kubectl get configmap -n {NAMESPACE} -o json'
+def get_configmaps(namespace):
+    """Fetch all ConfigMaps in the given namespace."""
+    cmd = f'kubectl get configmap -n {namespace} -o json'
     return run_command(cmd)
 
-def get_deployments():
-    """Fetch all Deployments in the namespace."""
-    cmd = f'kubectl get deployment -n {NAMESPACE} -o json'
+def get_deployments(namespace):
+    """Fetch all Deployments in the given namespace."""
+    cmd = f'kubectl get deployment -n {namespace} -o json'
     return run_command(cmd)
 
 def map_configmaps_to_deployments(deployments, configmaps):
-    """Find deployments referencing configmaps and extract annotations."""
+    """Map ConfigMaps to Deployments based on references and extract specific annotations."""
     mapping = {}
 
     for deployment in deployments.get("items", []):
         deployment_name = deployment["metadata"]["name"]
-        annotations = deployment["metadata"].get("annotations", {})
+        deployment_annotations = deployment["metadata"].get("annotations", {})
 
-        # Check if Deployment references a ConfigMap
+        # Find referenced ConfigMaps
         for container in deployment["spec"]["template"]["spec"]["containers"]:
             env_from = container.get("envFrom", [])
             for env_ref in env_from:
                 if "configMapRef" in env_ref:
                     configmap_name = env_ref["configMapRef"]["name"]
 
-                    # Extract ConfigMap data
-                    configmap_data = next((cm["data"] for cm in configmaps["items"] if cm["metadata"]["name"] == configmap_name), {})
+                    # Find the ConfigMap and check for required annotations in metadata
+                    configmap = next(
+                        (cm for cm in configmaps.get("items", []) if cm["metadata"]["name"] == configmap_name),
+                        None
+                    )
 
-                    if configmap_data:
-                        missing_annotations = {k: v for k, v in configmap_data.items() if k not in annotations}
-                        
-                        if missing_annotations:
+                    if configmap and "annotations" in configmap["metadata"]:
+                        relevant_annotations = {
+                            k: v for k, v in configmap["metadata"]["annotations"].items() if k in REQUIRED_ANNOTATIONS
+                        }
+
+                        if relevant_annotations:
                             mapping[deployment_name] = {
                                 "configmap": configmap_name,
-                                "missing_annotations": missing_annotations
+                                "annotations": relevant_annotations
                             }
 
     return mapping
 
 def save_mapping(mapping):
-    """Save the mapping of missing annotations to a JSON file."""
+    """Save the mapping of annotations to a predefined JSON file."""
     with open(OUTPUT_FILE, "w") as f:
         json.dump(mapping, f, indent=4)
     print(f"Mappings saved to {OUTPUT_FILE}")
 
 if __name__ == "__main__":
-    print("🔍 Fetching ConfigMaps and Deployments...")
-    configmaps = get_configmaps()
-    deployments = get_deployments()
+    parser = argparse.ArgumentParser(description="Fetch annotations from ConfigMaps and map to Deployments.")
+    parser.add_argument("-n", "--namespace", default="default", help="Kubernetes namespace to scan (default: 'default')")
+
+    args = parser.parse_args()
+    
+    print(f"Fetching ConfigMaps and Deployments from namespace: {args.namespace}...")
+    configmaps = get_configmaps(args.namespace)
+    deployments = get_deployments(args.namespace)
 
     if not configmaps or not deployments:
-        print("Failed to retrieve resources. Check access permissions.")
+        print("Failed to retrieve resources. Check access permissions or if resources exist in the namespace.")
         exit(1)
 
     mapping = map_configmaps_to_deployments(deployments, configmaps)
 
     if mapping:
-        print("Missing annotations found! Saving for later application...")
+        print("Relevant annotations found! Saving for later application...")
         save_mapping(mapping)
     else:
-        print("No missing annotations detected. Nothing to apply.")
+        print("No relevant annotations detected. Nothing to apply.")
 
-    print("Fetch and validation complete!")
+    print(f"Fetch and validation complete! Results stored in {OUTPUT_FILE}")

@@ -1,11 +1,26 @@
 # Kubernetes Annotation Restoration and Backup Tools
 
-This repository provides tools for:
-- **Restoring missing annotations** on Kubernetes Deployments
-- **Backing up and rolling back Deployments** to a stable state
+## **Scripts Overview**
+This repository consists of:
+1. **Backup and Rollback Scripts** - Ensuring deployments are safely backed up and recoverable.
+2. **Annotation Management Scripts** - Ensuring critical metadata is correctly applied to deployments.
+
+## **Backup and Rollback Scripts**
+
+### **Backup All Deployments (`backup.sh`)**
+- Saves all Deployments as YAML files in the `backup/` directory.
+- **Cleans metadata** (`status`, `resourceVersion`, `uid`, etc.) **before saving** to avoid conflicts during restoration.
+
+### **Rollback All Deployments (`rollback.sh`)**
+- Ensures a **clean rollback** without modification issues.
+
+### **Usage**
+```bash
+./backup.sh <namespace>
 
 
-
+```bash
+./rollback.sh <namespace>
 ---
 
 ## **Scripts Overview**

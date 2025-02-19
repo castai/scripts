@@ -31,11 +31,8 @@ rollback_deployment() {
 
   echo "Rolling back deployment: $deployment_name using backup file: $backup_file"
 
-  # Delete the existing deployment to prevent conflicts
-  kubectl delete deployment "$deployment_name" -n "$NAMESPACE" --ignore-not-found=true
-
-  # Reapply from backup
-  kubectl apply -f "$backup_file" -n "$NAMESPACE"
+  # Restore the backup using kubectl replace --force to apply it completely
+  kubectl replace --force -f "$backup_file" -n "$NAMESPACE"
 
   if [ $? -eq 0 ]; then
     echo "Successfully restored $deployment_name from backup."

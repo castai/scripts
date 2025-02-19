@@ -26,8 +26,8 @@ def apply_annotations(deployment_name, missing_annotations):
     for key, value in missing_annotations.items():
         print(f"🔄 Annotating {deployment_name}: {key} -> (Value Hidden for Length)")
         
-        # Use `kubectl annotate --overwrite` to ensure safe updates
-        cmd = f"kubectl annotate deployment {deployment_name} -n {NAMESPACE} {key}='{value}' --overwrite"
+        # Use double quotes for the annotation value
+        cmd = f'kubectl annotate deployment {deployment_name} -n {NAMESPACE} {key}="{value}" --overwrite'
         
         try:
             subprocess.run(cmd, shell=True, check=True)

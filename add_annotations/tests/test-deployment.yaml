@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-component-deployment
+  namespace: test-namespace
+  labels:
+    app: test-component
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-component
+  template:
+    metadata:
+      labels:
+        app: test-component
+    spec:
+      containers:
+        - name: test-container
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: test-component-config

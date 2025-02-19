@@ -30,24 +30,25 @@ def get_existing_annotations(deployment_name, namespace):
     return {}
 
 def apply_annotations(deployment_name, annotations, namespace):
-    """Apply missing annotations using kubectl annotate."""
+    """Apply missing annotations using kubectl annotate without overwriting existing ones."""
     existing_annotations = get_existing_annotations(deployment_name, namespace)
+
+    # Filter out annotations that already exist to avoid overwriting
     missing_annotations = {k: v for k, v in annotations.items() if k not in existing_annotations}
 
     if not missing_annotations:
-        print(f"Skipping {deployment_name}: All annotations already present.")
+        print(f"Skipping {deployment_name}: All required annotations already present.")
         return
 
-    for key, value in missing_annotations.items():
-        print(f"Annotating {deployment_name}: {key} -> (Value Hidden for Length)")
+    # Construct annotation command without --overwrite to prevent existing values from being changed
+    annotation_args = " ".join([f'{key}="{value}"' for key, value in missing_annotations.items()])
+    cmd = f'kubectl annotate deployment {deployment_name} -n {namespace} {annotation_args}'
 
-        cmd = f'kubectl annotate deployment {deployment_name} -n {namespace} {key}="{value}" --overwrite'
-        
-        try:
-            subprocess.run(cmd, shell=True, check=True)
-            print(f"Successfully added annotation {key} to {deployment_name}")
-        except subprocess.CalledProcessError as e:
-            print(f"Failed to annotate {deployment_name} with {key}: {e}")
+    try:
+        subprocess.run(cmd, shell=True, check=True)
+        print(f"Successfully added missing annotations to {deployment_name}")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to annotate {deployment_name}: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Apply missing annotations to Kubernetes deployments.")

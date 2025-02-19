@@ -17,10 +17,11 @@ This repository consists of:
 ### **Usage**
 ```bash
 ./backup.sh <namespace>
-
+```
 
 ```bash
 ./rollback.sh <namespace>
+```
 ---
 
 ## **Scripts Overview**
@@ -51,8 +52,10 @@ These scripts are used to **fetch, map, and restore missing annotations** from C
    Run the first script to get :
    ```bash
    ./get-annotations.py -n <namespace>
+   ```
 
 2. **Add Missing Annotations:**  
    Run the second script to get :
    ```bash
    ./apply-annotations.py -n <namespace>
+   ```

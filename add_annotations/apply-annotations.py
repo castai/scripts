@@ -19,7 +19,7 @@ def get_existing_annotations(deployment_name, namespace):
     """Fetch current annotations for a given deployment."""
     cmd = f'kubectl get deployment {deployment_name} -n {namespace} -o json'
     output = run_command(cmd)
-    
+
     if output:
         try:
             deployment = json.loads(output)
@@ -29,29 +29,43 @@ def get_existing_annotations(deployment_name, namespace):
             return {}
     return {}
 
-def apply_annotations(deployment_name, annotations, namespace):
-    """Apply missing annotations using kubectl annotate without overwriting existing ones."""
-    existing_annotations = get_existing_annotations(deployment_name, namespace)
+def dry_run_all(mapping, namespace):
+    """Preview all missing annotations without applying them."""
+    changes = {}
 
-    # Filter out annotations that already exist to avoid overwriting
-    missing_annotations = {k: v for k, v in annotations.items() if k not in existing_annotations}
+    print("\n[DRY RUN] The following annotations will be added:\n")
+    
+    for deployment_name, data in mapping.items():
+        existing_annotations = get_existing_annotations(deployment_name, namespace)
+        missing_annotations = {k: v for k, v in data["annotations"].items() if k not in existing_annotations}
 
-    if not missing_annotations:
-        print(f"Skipping {deployment_name}: All required annotations already present.")
-        return
+        if missing_annotations:
+            print(f"Deployment: {deployment_name} (namespace: {namespace})")
+            for key, value in missing_annotations.items():
+                print(f"  - {key}: {value}")
+            print()
+            changes[deployment_name] = missing_annotations
 
-    # Construct annotation command without --overwrite to prevent existing values from being changed
-    annotation_args = " ".join([f'{key}="{value}"' for key, value in missing_annotations.items()])
-    cmd = f'kubectl annotate deployment {deployment_name} -n {namespace} {annotation_args}'
+    if not changes:
+        print("No changes needed. All required annotations are already present.")
+        return None
+    
+    return changes
 
-    try:
-        subprocess.run(cmd, shell=True, check=True)
-        print(f"Successfully added missing annotations to {deployment_name}")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to annotate {deployment_name}: {e}")
+def apply_annotations(changes, namespace):
+    """Apply all annotations after user confirmation."""
+    for deployment_name, annotations in changes.items():
+        annotation_args = " ".join([f'{key}="{value}"' for key, value in annotations.items()])
+        cmd = f'kubectl annotate deployment {deployment_name} -n {namespace} {annotation_args}'
+
+        try:
+            subprocess.run(cmd, shell=True, check=True)
+            print(f"Successfully added missing annotations to {deployment_name}")
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to annotate {deployment_name}: {e}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Apply missing annotations to Kubernetes deployments.")
+    parser = argparse.ArgumentParser(description="Apply missing annotations to Kubernetes deployments with full dry-run preview.")
     parser.add_argument("-n", "--namespace", required=True, help="Kubernetes namespace to update deployments in")
 
     args = parser.parse_args()
@@ -61,12 +75,24 @@ if __name__ == "__main__":
         print(f"Error: {INPUT_FILE} not found. Run `get_annotations.py` first.")
         exit(1)
 
-    print("Loading saved annotations...")
+    print("\nLoading saved annotations...")
     with open(INPUT_FILE, "r") as f:
         mapping = json.load(f)
 
-    for deployment_name, data in mapping.items():
-        print(f"Processing {deployment_name} in namespace {namespace}...")
-        apply_annotations(deployment_name, data["annotations"], namespace)
+    # Dry-run: Show all changes first
+    changes = dry_run_all(mapping, namespace)
 
-    print("Annotation restoration complete!")
+    if not changes:
+        print("\nNo changes applied. Exiting.")
+        exit(0)
+
+    # Ask for confirmation before applying changes
+    confirm = input("\nApply these changes? (yes/no): ").strip().lower()
+    if confirm not in ["yes", "y"]:
+        print("\nNo changes applied. Exiting.")
+        exit(0)
+
+    # Apply all changes
+    apply_annotations(changes, namespace)
+
+    print("\nAnnotation update process complete.")

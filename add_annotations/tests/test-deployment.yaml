@@ -1,0 +1,213 @@
+apiVersion: apps/v1
+kind: List
+items:
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: deployment1
+      namespace: test-namespace
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: deployment1
+      template:
+        metadata:
+          labels:
+            app: deployment1
+        spec:
+          containers:
+          - name: nginx
+            image: nginx
+            envFrom:
+            - configMapRef:
+                name: test-configmap-1
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: deployment2
+      namespace: test-namespace
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: deployment2
+      template:
+        metadata:
+          labels:
+            app: deployment2
+        spec:
+          containers:
+          - name: nginx
+            image: nginx
+            envFrom:
+            - configMapRef:
+                name: test-configmap-2
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: deployment3
+      namespace: test-namespace
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: deployment3
+      template:
+        metadata:
+          labels:
+            app: deployment3
+        spec:
+          containers:
+          - name: nginx
+            image: nginx
+            envFrom:
+            - configMapRef:
+                name: test-configmap-3
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: deployment4
+      namespace: test-namespace
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: deployment4
+      template:
+        metadata:
+          labels:
+            app: deployment4
+        spec:
+          containers:
+          - name: nginx
+            image: nginx
+            envFrom:
+            - configMapRef:
+                name: test-configmap-4
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: deployment5
+      namespace: test-namespace
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: deployment5
+      template:
+        metadata:
+          labels:
+            app: deployment5
+        spec:
+          containers:
+          - name: nginx
+            image: nginx
+            envFrom:
+            - configMapRef:
+                name: test-configmap-5
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: deployment6
+      namespace: test-namespace
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: deployment6
+      template:
+        metadata:
+          labels:
+            app: deployment6
+        spec:
+          containers:
+          - name: nginx
+            image: nginx
+            envFrom:
+            - configMapRef:
+                name: test-configmap-6
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: deployment7
+      namespace: test-namespace
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: deployment7
+      template:
+        metadata:
+          labels:
+            app: deployment7
+        spec:
+          containers:
+          - name: nginx
+            image: nginx
+            envFrom:
+            - configMapRef:
+                name: test-configmap-7
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: deployment8
+      namespace: test-namespace
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: deployment8
+      template:
+        metadata:
+          labels:
+            app: deployment8
+        spec:
+          containers:
+          - name: nginx
+            image: nginx
+            envFrom:
+            - configMapRef:
+                name: test-configmap-8
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: deployment9
+      namespace: test-namespace
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: deployment9
+      template:
+        metadata:
+          labels:
+            app: deployment9
+        spec:
+          containers:
+          - name: nginx
+            image: nginx
+            envFrom:
+            - configMapRef:
+                name: test-configmap-9
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: deployment10
+      namespace: test-namespace
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: deployment10
+      template:
+        metadata:
+          labels:
+            app: deployment10
+        spec:
+          containers:
+          - name: nginx
+            image: nginx
+            envFrom:
+            - configMapRef:
+                name: test-configmap-10

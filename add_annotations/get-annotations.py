@@ -11,7 +11,7 @@ def run_command(cmd):
         result.check_returncode()
         return json.loads(result.stdout)
     except subprocess.CalledProcessError as e:
-        print(f"❌ Error executing {cmd}: {e}")
+        print(f"Error executing {cmd}: {e}")
         return None
 
 def get_configmaps():
@@ -57,7 +57,7 @@ def save_mapping(mapping):
     """Save the mapping of missing annotations to a JSON file."""
     with open(OUTPUT_FILE, "w") as f:
         json.dump(mapping, f, indent=4)
-    print(f"\n✅ Mappings saved to {OUTPUT_FILE}")
+    print(f"Mappings saved to {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     print("🔍 Fetching ConfigMaps and Deployments...")
@@ -65,15 +65,15 @@ if __name__ == "__main__":
     deployments = get_deployments()
 
     if not configmaps or not deployments:
-        print("❌ Failed to retrieve resources. Check access permissions.")
+        print("Failed to retrieve resources. Check access permissions.")
         exit(1)
 
     mapping = map_configmaps_to_deployments(deployments, configmaps)
 
     if mapping:
-        print("\n⚡ Missing annotations found! Saving for later application...")
+        print("Missing annotations found! Saving for later application...")
         save_mapping(mapping)
     else:
-        print("\n✅ No missing annotations detected. Nothing to apply.")
+        print("No missing annotations detected. Nothing to apply.")
 
-    print("\n🎯 Fetch and validation complete!")
+    print("Fetch and validation complete!")

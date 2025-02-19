@@ -12,7 +12,7 @@ def run_command(cmd):
         result.check_returncode()
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
-        print(f"❌ Error executing {cmd}: {e}")
+        print(f"Error executing {cmd}: {e}")
         return None
 
 def get_deployments():
@@ -24,23 +24,23 @@ def get_deployments():
 def apply_annotations(deployment_name, missing_annotations):
     """Apply missing annotations using kubectl annotate."""
     for key, value in missing_annotations.items():
-        print(f"🔄 Annotating {deployment_name}: {key} -> (Value Hidden for Length)")
+        print(f"Annotating {deployment_name}: {key} -> (Value Hidden for Length)")
         
         # Use double quotes for the annotation value
         cmd = f'kubectl annotate deployment {deployment_name} -n {NAMESPACE} {key}="{value}" --overwrite'
         
         try:
             subprocess.run(cmd, shell=True, check=True)
-            print(f"✅ Successfully added annotation {key} to {deployment_name}")
+            print(f"Successfully added annotation {key} to {deployment_name}")
         except subprocess.CalledProcessError as e:
-            print(f"❌ Failed to annotate {deployment_name} with {key}: {e}")
+            print(f"Failed to annotate {deployment_name} with {key}: {e}")
 
 if __name__ == "__main__":
     if not os.path.exists(INPUT_FILE):
-        print(f"❌ Error: {INPUT_FILE} not found. Run `get_annotations.py` first.")
+        print(f"Error: {INPUT_FILE} not found. Run `get_annotations.py` first.")
         exit(1)
 
-    print("🔍 Loading saved annotations...")
+    print("Loading saved annotations...")
     with open(INPUT_FILE, "r") as f:
         mapping = json.load(f)
 
@@ -49,10 +49,10 @@ if __name__ == "__main__":
 
     for deployment_name, data in mapping.items():
         if deployment_name not in existing_deployments:
-            print(f"⚠️ Skipping {deployment_name}: Deployment no longer exists.")
+            print(f"️Skipping {deployment_name}: Deployment no longer exists.")
             continue
 
-        print(f"\n🔄 Applying annotations to {deployment_name}...")
+        print(f"Applying annotations to {deployment_name}...")
         apply_annotations(deployment_name, data["missing_annotations"])
 
-    print("\n🎯 Annotation restoration complete!")
+    print("Annotation restoration complete!")

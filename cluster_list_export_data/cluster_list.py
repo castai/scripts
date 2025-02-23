@@ -17,7 +17,6 @@ Features:
   - If aggressive mode is enabled
   - If there is scheduled rebalancing
   - Workload autoscaler status
-  - Workload Autoscaler status
   - Workload autoscaler optimized percentage
 
 Requirements:

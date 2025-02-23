@@ -18,7 +18,6 @@ Features:
   - If there is scheduled rebalancing
   - Workload autoscaler status
   - Workload Autoscaler status
-  - Problematic nodes and pods
   - Workload autoscaler optimized percentage
 
 Requirements:

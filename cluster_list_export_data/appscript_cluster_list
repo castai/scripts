@@ -51,9 +51,9 @@ function transferData() {
       targetSheet.getRange(11 + i, 6).setValue("Partly");
     }
 
-    // Rebalancer: If column L contains "No schedules", write "No" in column G of the target sheet
+    // Rebalancer: If column J contains "No schedules", write "No" in column G of the target sheet
     // else write "Yes"
-    if (row[11] == "No schedules") {
+    if (row[91] == "No schedules") {
       targetSheet.getRange(11 + i, 7).setValue("No");
     }
     else {

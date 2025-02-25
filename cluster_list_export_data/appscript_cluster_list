@@ -1,0 +1,72 @@
+function transferData() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(); // Get the active spreadsheet
+
+  // Get the source sheet and target sheet
+  var sourceSheet = ss.getSheetByName("cluster-list"); // Replace with your source sheet name
+  var targetSheet = ss.getSheetByName("Status"); // Replace with your target sheet name
+
+  // Get the data from the source sheet starting from row 2
+  var sourceData = sourceSheet.getRange(2, 1, sourceSheet.getLastRow() - 1, sourceSheet.getLastColumn()).getValues();
+
+  // Loop through the rows and apply the conditions to the target sheet
+  for (var i = 0; i < sourceData.length; i++) {
+    var row = sourceData[i];
+
+    // Cluster name: Write the data from column B to target sheet, starting from row 11
+    // source: row[x] = [0,1,2..]  ;  target: getRange(11 + i, y) = (1,2,3) 
+    targetSheet.getRange(11 + i, 1).setValue(row[1]);
+    
+    // Provider: Write the data from column C to target sheet in column B, starting from row 11
+    targetSheet.getRange(11 + i, 2).setValue(row[2]);
+    
+    // Is Connected: If cluster status in column D is "ready": If column E equals true, write "Yes" in columns D and "No" in column C of the target sheet
+    // else, set them to "No"
+    if (row[3] == "ready") {
+      if (row[4] == 1) {
+        targetSheet.getRange(11 + i, 4).setValue("Yes");
+        targetSheet.getRange(11 + i, 3).setValue("No");
+      }
+      else {
+        targetSheet.getRange(11 + i, 4).setValue("No");
+        targetSheet.getRange(11 + i, 3).setValue("Yes");      
+      }
+    }
+    else {
+      targetSheet.getRange(11 + i, 4).setValue("No");
+      targetSheet.getRange(11 + i, 3).setValue("No");
+    }
+
+    // Is Managed: Write the data from column F to target sheet, starting from row 11
+    targetSheet.getRange(11 + i, 5).setValue(row[5]);
+
+    // Autoscaler: If columns G and H both FALSE, write "No" in column F of the target sheet
+    // If both are true, write "Yes", else "Partly"
+    if (row[6] == 0 && row[7] == 0) {
+      targetSheet.getRange(11 + i, 6).setValue("No");
+    }
+    else if (row[6] == 1 && row[7] == 1){
+      targetSheet.getRange(11 + i, 6).setValue("Yes");
+    }
+    else {
+      targetSheet.getRange(11 + i, 6).setValue("Partly");
+    }
+
+    // Rebalancer: If column L contains "No schedules", write "No" in column G of the target sheet
+    // else write "Yes"
+    if (row[11] == "No schedules") {
+      targetSheet.getRange(11 + i, 7).setValue("No");
+    }
+    else {
+      targetSheet.getRange(11 + i, 7).setValue("Yes");
+    }
+
+    // WOOP: If column K contains "{'status': 'AGENT_STATUS_UNKNOWN'}", write "Not installed" in column H of the target sheet
+    // else write the data from column L to target sheet - woop percentage.
+    if (row[10] == "{'status': 'AGENT_STATUS_UNKNOWN'}") {
+      targetSheet.getRange(11 + i, 8).setValue("Not installed");
+    }
+    else {
+      targetSheet.getRange(11 + i, 8).setValue(row[11]);
+    }
+  }
+}

@@ -1,32 +1,34 @@
 """
-CAST.AI Cluster Report Script
+CAST.AI Cluster List Script
 
 This script interacts with the CAST.AI API to retrieve and analyze information about 
-Kubernetes clusters managed by CAST.AI. It collects various metrics and configuration 
-details, then generates both Excel and JSON reports.
+clusters in specific org. It collects various metrics and statuses of different features, then generates both Excel and JSON reports.
 
-Features:
-- Retrieves cluster information from CAST.AI
-- Collects data on:
-  - Cluster name
-  - Cloud provider
-  - If in connected (phase2)
-  - Percentage of nodes managed by Cast
-  - If unscheduled pods policy is enabled
-  - If Evictor is enabled
-  - If aggressive mode is enabled
-  - If there is scheduled rebalancing
-  - Workload autoscaler status
-  - Workload autoscaler optimized percentage
+Collects data on:
+  - Cluster ID
+  - Cluster Name
+  - Cloud Provider
+  - Cluster Status
+  - Is Connected (phase2)
+  - Percentage Of Nodes Managed By Cast
+  - If Unscheduled Pods Policy Is Enabled
+  - If Evictor Is Enabled
+  - If Aggressive Mode Is Enabled
+  - If There Is Scheduled Rebalancing
+  - Workload Autoscaler Status
+  - Workload Autoscaler Optimized Percentage
 
 Requirements:
 1. API access token.
-2. Ensure all required packages are installed (requests, pandas, termcolor)
-3. Run the script: python3 cluster_list.py
+2. Ensure all required packages are installed (requests, pandas, termcolor...)
+3. Ensure python3 is installed.
 
 Output:
 - clusters_info.xlsx: Excel spreadsheet with detailed cluster information
 - clusters_info.json: JSON file with structured cluster data
+
+How To Activate:
+Run the script: python3 cluster_list.py
 
 """
 
@@ -332,17 +334,16 @@ def get_cluster():
             cluster_result = {
                 "Cluster ID": cluster_id,
                 "Cluster Name": cluster_name,
-                "Provider Type": provider_type,
-                "Provider Type": provider_type,
+                "Cloud Provider": provider_type,
                 "Cluster Status": status,
                 "Is Connected": is_connected,
                 "Managed By Cast %": percentage_managed_by_cast,
-                "Unschedulable Pods Policy": unschedulable_pods,
-                "Evictor": evictor,
-                "Aggressive Mode": aggressiveMode,
-                "schedule Rebalancing": ", ".join(schedule_rebalance) if schedule_rebalance else "No schedules",
-                "Workload Autoscaler": autoscaler,
-                "Woop Optimized Percentage": optimized_percentage,
+                "Is Unschedulable Pods Policy": unschedulable_pods,
+                "Is Evictor": evictor,
+                "Is Aggressive Mode": aggressiveMode,
+                "Is Scheduled Rebalancing": ", ".join(schedule_rebalance) if schedule_rebalance else "No schedules",
+                "Workload Autoscaler Status": autoscaler,
+                "Workload Autoscaler Optimized Percentage": optimized_percentage,
                 # "Autoscaler": enabled,
                 # "Node Deletion Policy": node_downscaler,
                 # "Node-Template data": templates,

@@ -53,7 +53,7 @@ function transferData() {
 
     // Rebalancer: If column J contains "No schedules", write "No" in column G of the target sheet
     // else write "Yes"
-    if (row[91] == "No schedules") {
+    if (row[9] == "No schedules") {
       targetSheet.getRange(11 + i, 7).setValue("No");
     }
     else {

@@ -2,7 +2,7 @@ function transferData() {
   var ss = SpreadsheetApp.getActiveSpreadsheet(); // Get the active spreadsheet
 
   // Get the source sheet and target sheet
-  var sourceSheet = ss.getSheetByName("cluster-list"); // Replace with your source sheet name
+  var sourceSheet = ss.getSheetByName("Sheet14"); // Replace with your source sheet name
   var targetSheet = ss.getSheetByName("Status"); // Replace with your target sheet name
 
   // Get the data from the source sheet starting from row 2

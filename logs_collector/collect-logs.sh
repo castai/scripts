@@ -26,7 +26,7 @@ for POD in $CPODS; do
     kubectl logs -n castai-agent $POD > $TMP_DIR/$POD.log
 done
 
-
+# If node names are provided, collect node logs
 if [ ${#NODE_LIST[@]} -gt 0 ]; then
     echo "Deploy debug pod"
     for NODE in "${NODE_LIST[@]}"; do
@@ -52,13 +52,4 @@ echo "Zipping all logs"
 tar -czf "${DATE}-${CLUSTERNAME}-logs.tar.gz" $TMP_DIR
 
 rm -r $TMP_DIR
-
-# echo "Collecting node logs"
-# for NODE in $NODE_LIST; do
-#     kubectl debug node/$NODE --image ubuntu -- /bin/bash -c 'while true; do sleep 30; done;'
-# done
-
-
-# kubectl debug node/aks-nodepool1-27697427-vmss000000 --image ubuntu -- /bin/bash -c 'while true; do sleep 30; done;'
-# k exec node-debugger-aks-nodepool1-27697427-vmss000000-pnn48 -- chroot /host /bin/bash -c "journalctl -u kubelet" > kubelet.log
 

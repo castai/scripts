@@ -42,10 +42,10 @@ if [ ${#NODE_LIST[@]} -gt 0 ]; then
     sleep 10
 
     # Get all debug pods
-    DPODS=$(kubectl get pods -n castai-agent | grep "node-debugger" | awk '{print $1}')
+    DPODS=$(kubectl get pods | grep "node-debugger" | awk '{print $1}')
 
     for POD in $DPODS; do
-        NODENAME=$(kubectl get pod $POD -n castai-agent -o jsonpath='{.spec.nodeName}')
+        NODENAME=$(kubectl get pod $POD -o jsonpath='{.spec.nodeName}')
         echo "Collecting logs for node: $NODENAME"
         kubectl exec $POD -- chroot /host /bin/bash -c "journalctl -u kubelet" > $TMP_DIR/$NODENAME-kubelet.log
         kubectl exec $POD -- chroot /host /bin/bash -c "journalctl -u containerd" > $TMP_DIR/$NODENAME-containerd.log

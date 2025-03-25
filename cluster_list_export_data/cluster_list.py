@@ -43,8 +43,33 @@ import threading
 import os
 import json
 
+
+API_US_CONSOLE_ENDPOINT = "https://console.cast.ai"
+API_EU_CONSOLE_ENDPOINT = "https://console.eu.cast.ai"
+
+API_US_ENDPOINT="https://api.cast.ai"
+API_EU_ENDPOINT="https://api.eu.cast.ai"
+
+
+# Default API ENDPOINT to the US Endpoint
+API_CONSOLE_ENDPOINT = API_US_CONSOLE_ENDPOINT
+API_ENDPOINT = API_US_ENDPOINT
+
+# Prompt the user to choose the Data Center
+print("Please choose the Data Center.")
+choice = input("Enter [1] for US, or for [2] EU): ").strip()
+
+# Set the API ENDPOINT based on the user's choice
+if choice == "2": 
+    API_CONSOLE_ENDPOINT = API_EU_CONSOLE_ENDPOINT
+    API_ENDPOINT = API_EU_ENDPOINT
+elif choice != "1":
+    print("Defaulting to US Data Center.")
+
+# API_CONSOLE_ENDPOINT is now set and can be used in URL construction later
+print(f"Using API endpoint: {API_CONSOLE_ENDPOINT}")
+
 access_token = input("Enter API token: ")
-# access_token = "2b41a6954edb5abdbf80df7ccb77f13a3802f4544825be18221ef25e7e108480"
 
 headers = {
     "X-API-Key": access_token,
@@ -52,7 +77,7 @@ headers = {
 }
 
 def policy_info(cluster_id):
-    url = f"https://console.cast.ai/api/v1/kubernetes/clusters/{cluster_id}/policies"
+    url = f"{API_CONSOLE_ENDPOINT}/api/v1/kubernetes/clusters/{cluster_id}/policies"
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()  # Raise exception for 4xx or 5xx status codes
@@ -69,7 +94,7 @@ def policy_info(cluster_id):
     
 
 def workloads_summary(cluster_id):
-    url = f"https://console.cast.ai/api/v1/workload-autoscaling/clusters/{cluster_id}/workloads-summary"
+    url = f"{API_CONSOLE_ENDPOINT}/api/v1/workload-autoscaling/clusters/{cluster_id}/workloads-summary"
     try:
         response = requests.get(url, headers=headers)
         if response.status_code == 400:
@@ -92,7 +117,7 @@ def workloads_summary(cluster_id):
     
 
 def is_managed(cluster_id):
-    url = f"https://api.cast.ai/v1/cost-reports/organization/clusters/summary"
+    url = f"{API_ENDPOINT}/v1/cost-reports/organization/clusters/summary"
     
     try:
         response = requests.get(url, headers=headers)
@@ -124,7 +149,7 @@ def is_managed(cluster_id):
 
 
 def rebalance_plan(cluster_id):
-    url = f"https://console.cast.ai/api/v1/kubernetes/clusters/{cluster_id}/rebalancing-plans?limit=5&cursor=&includeOperations=false&includeConfigurations=true"
+    url = f"{API_CONSOLE_ENDPOINT}/api/v1/kubernetes/clusters/{cluster_id}/rebalancing-plans?limit=5&cursor=&includeOperations=false&includeConfigurations=true"
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -143,7 +168,7 @@ def rebalance_plan(cluster_id):
 
 
 def schedule(cluster_id):
-    url = f"https://console.cast.ai/api/v1/rebalancing-schedules"
+    url = f"{API_CONSOLE_ENDPOINT}/api/v1/rebalancing-schedules"
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -169,7 +194,7 @@ def efficiency_report(cluster_id):
     start_date_str = start_date.strftime("%Y-%m-%dT%H:%M:%S.000Z")
     end_date_str = end_date.strftime("%Y-%m-%dT%H:%M:%S.000Z")
     
-    url = f"https://console.cast.ai/api/v1/cost-reports/clusters/{cluster_id}/efficiency?startTime={start_date_str}&endTime={end_date_str}"
+    url = f"{API_CONSOLE_ENDPOINT}/api/v1/cost-reports/clusters/{cluster_id}/efficiency?startTime={start_date_str}&endTime={end_date_str}"
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -183,7 +208,7 @@ def efficiency_report(cluster_id):
 
 
 def node_Template(cluster_id):
-    url = f"https://console.cast.ai/api/v1/kubernetes/external-clusters/{cluster_id}/nodes"
+    url = f"{API_CONSOLE_ENDPOINT}/api/v1/kubernetes/external-clusters/{cluster_id}/nodes"
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -291,7 +316,7 @@ def transform_response(response):
 
 
 def workload(cluster_id):
-    url = f"https://api.cast.ai/v1/kubernetes/clusters/{cluster_id}/workloads"
+    url = f"{API_ENDPOINT}/v1/kubernetes/clusters/{cluster_id}/workloads"
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -309,7 +334,7 @@ def workload(cluster_id):
     
 
 def get_cluster():
-    url = f"https://console.cast.ai/api/v1/kubernetes/external-clusters"
+    url = f"{API_CONSOLE_ENDPOINT}/api/v1/kubernetes/external-clusters"
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -362,7 +387,7 @@ def get_cluster():
 
 
 def workload_autoscaler(cluster_id):
-    url = f"https://api.cast.ai/v1/workload-autoscaling/clusters/{cluster_id}/components/workload-autoscaler"
+    url = f"{API_ENDPOINT}/v1/workload-autoscaling/clusters/{cluster_id}/components/workload-autoscaler"
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()

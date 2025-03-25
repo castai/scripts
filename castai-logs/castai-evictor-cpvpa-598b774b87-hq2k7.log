@@ -1,5 +1,0 @@
-I0324 08:32:59.409803       1 autoscaler.go:46] Scaling namespace: castai-agent, target: deployment/castai-evictor
-I0324 08:32:59.457588       1 autoscaler_server.go:120] setting config = { [castai-evictor]: { requests: { [memory]: { base=200Mi max=24Gi incr=256Mi nodes_incr=20 }, }, limits: { [memory]: { base=2Gi max=24Gi incr=256Mi nodes_incr=20 }} }, }
-I0324 08:32:59.457753       1 autoscaler_server.go:148] Updating resource for nodes: 5, cores: 16
-I0324 08:32:59.457823       1 autoscaler_server.go:162] Setting castai-evictor requests["memory"] = 478150656
-I0324 08:32:59.457868       1 autoscaler_server.go:165] Setting castai-evictor limits["memory"] = 2415919104

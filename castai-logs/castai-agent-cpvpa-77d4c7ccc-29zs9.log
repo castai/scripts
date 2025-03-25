@@ -1,5 +1,0 @@
-I0324 08:30:51.242909       1 autoscaler.go:46] Scaling namespace: castai-agent, target: deployment/castai-agent
-I0324 08:30:51.289914       1 autoscaler_server.go:120] setting config = { [agent]: { requests: { [memory]: { base=2Gi max=8Gi incr=256Mi cores_incr=480 nodes_incr=20 }, }, limits: { [memory]: { base=2Gi max=8Gi incr=256Mi cores_incr=480 nodes_incr=20 }} }, }
-I0324 08:30:51.289962       1 autoscaler_server.go:148] Updating resource for nodes: 5, cores: 16
-I0324 08:30:51.289968       1 autoscaler_server.go:162] Setting agent requests["memory"] = 2415919104
-I0324 08:30:51.289980       1 autoscaler_server.go:165] Setting agent limits["memory"] = 2415919104

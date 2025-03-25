@@ -1,23 +1,30 @@
 #!/bin/bash
 set -euo pipefail
 
-# Create temp directory
-TMP_DIR="$PWD/castai-logs"
-mkdir -p "$TMP_DIR"
-# trap $(rm -r $TMP_DIR) SIGINT SIGTERM EXIT
 
-DEFAULT_NS="castai-agent"
-# NAMESPACE="${1:-$DEFAULT_NS}"
-DATE=$(date -u +%Y-%m-%dT%H:%M:%S | tr -d ":" | tr -d "-")
-CLUSTERNAME=$(kubectl config view --minify -o jsonpath={'.clusters[].name'} | tr -d '[:space:]' | tr -d "-" | tr -d "." | cut -c1-15)
-CONTEXT=$(kubectl config current-context)
-NODE_COUNT=$(kubectl get nodes -o jsonpath='{.items[*].metadata.name}' | wc -w)
-echo "Using current context: $CONTEXT"
+# Store all args in NODE_LIST
 NODE_LIST=()
-
 for ARG in "$@"; do
     NODE_LIST+=("$ARG")
 done
+
+
+DATE=$(date -u +%Y-%m-%dT%H:%M:%S | tr -d ":" | tr -d "-")
+CLUSTERNAME=$(kubectl config view --minify -o jsonpath={'.clusters[].name'} | tr -d '[:space:]' | tr -d "-" | tr -d "." | cut -c1-15)
+CONTEXT=$(kubectl config current-context)
+echo "Using current context: $CONTEXT"
+
+# Validate of node names exists
+for NODE in "${NODE_LIST[@]}"; do
+    if [[ $(kubectl get nodes | grep $NODE | wc -l) -eq 0 ]]; then
+        echo "Node $NODE not found in the cluster"
+        exit 1
+    fi
+done
+
+# Create temp directory
+TMP_DIR="$PWD/castai-logs"
+mkdir -p "$TMP_DIR"
 
 # Get castai components logs
 CPODS=$(kubectl get pods -n castai-agent | grep "castai" | awk '{print $1}')
@@ -35,10 +42,10 @@ if [ ${#NODE_LIST[@]} -gt 0 ]; then
     sleep 10
 
     # Get all debug pods
-    DPODS=$(kubectl get pods -n castai-agent | grep "node-debugger" | awk '{print $1}')
+    DPODS=$(kubectl get pods | grep "node-debugger" | awk '{print $1}')
 
     for POD in $DPODS; do
-        NODENAME=$(kubectl get pod $POD -n castai-agent -o jsonpath='{.spec.nodeName}')
+        NODENAME=$(kubectl get pod $POD -o jsonpath='{.spec.nodeName}')
         echo "Collecting logs for node: $NODENAME"
         kubectl exec $POD -- chroot /host /bin/bash -c "journalctl -u kubelet" > $TMP_DIR/$NODENAME-kubelet.log
         kubectl exec $POD -- chroot /host /bin/bash -c "journalctl -u containerd" > $TMP_DIR/$NODENAME-containerd.log

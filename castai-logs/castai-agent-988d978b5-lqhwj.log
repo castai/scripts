@@ -1,0 +1,9 @@
+time="2025-03-24T08:35:09Z" level=info msg="running agent version: GitCommit=\"df9fceaaec128ff6698091bfdfe0e87989e87c05\" GitRef=\"refs/tags/v0.83.0\" Version=\"v0.83.0\"" component_node_name=aks-nodepool1-13995559-vmss000002 component_pod_name=castai-agent-988d978b5-lqhwj version=v0.83.0
+time="2025-03-24T08:35:09Z" level=info msg="platform URL: https://api.cast.ai" component_node_name=aks-nodepool1-13995559-vmss000002 component_pod_name=castai-agent-988d978b5-lqhwj version=v0.83.0
+time="2025-03-24T08:35:09Z" level=info msg="starting pprof server on port: 6060" component_node_name=aks-nodepool1-13995559-vmss000002 component_pod_name=castai-agent-988d978b5-lqhwj version=v0.83.0
+time="2025-03-24T08:35:09Z" level=info msg="starting healthz server on port: 9876" component_node_name=aks-nodepool1-13995559-vmss000002 component_pod_name=castai-agent-988d978b5-lqhwj version=v0.83.0
+time="2025-03-24T08:35:09Z" level=info msg="using provider \"aks\"" component_node_name=aks-nodepool1-13995559-vmss000002 component_pod_name=castai-agent-988d978b5-lqhwj provider=aks version=v0.83.0
+time="2025-03-24T08:35:09Z" level=info msg="starting with leader election" component_node_name=aks-nodepool1-13995559-vmss000002 component_pod_name=castai-agent-988d978b5-lqhwj own_identity=8716f825-a36e-4e53-b777-e69cd1577a5c provider=aks version=v0.83.0
+I0324 08:35:09.189178       7 leaderelection.go:250] attempting to acquire leader lease castai-agent/agent-leader-election-lock...
+time="2025-03-24T08:35:09Z" level=info msg="pprof server ready" component_node_name=aks-nodepool1-13995559-vmss000002 component_pod_name=castai-agent-988d978b5-lqhwj provider=aks version=v0.83.0
+time="2025-03-24T08:35:09Z" level=info msg="healthz server ready" component_node_name=aks-nodepool1-13995559-vmss000002 component_pod_name=castai-agent-988d978b5-lqhwj provider=aks version=v0.83.0

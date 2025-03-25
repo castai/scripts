@@ -40,10 +40,10 @@ if [ ${#NODE_LIST[@]} -gt 0 ]; then
     for POD in $DPODS; do
         NODENAME=$(kubectl get pod $POD -n castai-agent -o jsonpath='{.spec.nodeName}')
         echo "Collecting logs for node: $NODENAME"
-        kubectl exec -n castai-agent $POD -- chroot /host /bin/bash -c "journalctl -u kubelet" > $TMP_DIR/$NODENAME-kubelet.log
-        kubectl exec -n castai-agent $POD -- chroot /host /bin/bash -c "journalctl -u containerd" > $TMP_DIR/$NODENAME-containerd.log
+        kubectl exec $POD -- chroot /host /bin/bash -c "journalctl -u kubelet" > $TMP_DIR/$NODENAME-kubelet.log
+        kubectl exec $POD -- chroot /host /bin/bash -c "journalctl -u containerd" > $TMP_DIR/$NODENAME-containerd.log
         sleep 5
-        kubectl delete pod $POD -n castai-agent
+        kubectl delete pod $POD
     done
 fi
 

@@ -14,17 +14,26 @@ CLUSTERNAME=$(kubectl config view --minify -o jsonpath={'.clusters[].name'} | tr
 CONTEXT=$(kubectl config current-context)
 echo "Using current context: $CONTEXT"
 
+# Validate if castai-agent namespace exists
+if [[ $(kubectl get ns castai-agent | wc -l) -eq 0 ]]; then
+    echo "castai-agent namespace not found in the cluster"
+    exit 1
+fi
+
 # Validate of node names exists
-for NODE in "${NODE_LIST[@]}"; do
-    if [[ $(kubectl get nodes | grep $NODE | wc -l) -eq 0 ]]; then
-        echo "Node $NODE not found in the cluster"
-        exit 1
-    fi
-done
+if [ ${#NODE_LIST[@]} -gt 0 ]; then
+    for NODE in "${NODE_LIST[@]}"; do
+        if [[ $(kubectl get nodes | grep $NODE | wc -l) -eq 0 ]]; then
+            echo "Node $NODE not found in the cluster"
+            exit 1
+        fi
+    done
+fi
 
 # Create temp directory
 TMP_DIR="$PWD/castai-logs"
 mkdir -p "$TMP_DIR"
+trap 'rm -r $TMP_DIR' EXIT
 
 # Get castai components logs
 CPODS=$(kubectl get pods -n castai-agent | grep "castai" | awk '{print $1}')

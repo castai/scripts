@@ -40,10 +40,8 @@ get_pod_mutation() {
 # }
 
 # Get all pod mutation from source
-echo "Getting pod mutation from source cluster"
 MUTATION_LIST=$(get_pod_mutation)
 
-echo "Iterating over pod mutations"
 if [ $dry_run == true ]; then
     for item in $(echo "$MUTATION_LIST" | jq -c '.items[]'); do
         echo "DYRUN: Pod mutation: $item"
@@ -51,9 +49,7 @@ if [ $dry_run == true ]; then
 fi
 
 if [ $dry_run == false ]; then
-    for item in $(echo "$MUTATION_LIST" | jq -c '.items[]'); do
-        echo "Pod mutation: $item"
-    done
+    # TODO: Call POST API to create pod mutation
 fi
 
 

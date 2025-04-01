@@ -28,7 +28,7 @@ get_pod_mutation() {
 # create_pod_mutation() {
 #     curl --request POST \
 #      --url https://api.cast.ai/patching-engine/v1beta/organizations/%7Bpod_mutation.organization_id%7D/clusters/%7Bpod_mutation.cluster_id%7D/pod-mutations \
-#      --header 'X-API-Key: 8acc89c63c13dd708ab3d8fc6aee1cfb7c9475ea0ade4a1a5cb467629f41b771' \
+#      --header 'X-API-Key: ' \
 #      --header 'accept: application/json' \
 #      --header 'content-type: application/json' \
 #      --data '

@@ -1,9 +1,13 @@
 ## What does it do
-Collect logs from all pods in the castai-agent namespace. And optionally, if node names are added as arguments. The script will collect the kubelet and containerd logs of those nodes.
+Collect logs from all pods in the castai-agent namespace. And optionally, if node names are added as arguments. On the specified nodes, the script will collect
+- kubelet logs
+- containerd logs
+- ipamd logs (if eks)
 
 ## Requirements
 - kubectl
 - Current-context set correctly to target cluster
+- Current-context namespace, where `hostPath` container capability is allowed (if node logs will be collected - optional).
 
 ## Usage
 

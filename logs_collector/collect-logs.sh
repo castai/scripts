@@ -35,6 +35,9 @@ TMP_DIR="$PWD/castai-logs"
 mkdir -p "$TMP_DIR"
 trap 'rm -r $TMP_DIR' EXIT
 
+# Get cloud provider
+CSP=$(kubectl get deploy castai-agent -n castai-agent -o jsonpath="{.spec.template.spec.containers[?(@.name=='agent')].env[?(@.name=='PROVIDER')].value}")
+
 # Get castai components logs
 CPODS=$(kubectl get pods -n castai-agent | grep "castai" | awk '{print $1}')
 for POD in $CPODS; do
@@ -58,6 +61,9 @@ if [ ${#NODE_LIST[@]} -gt 0 ]; then
         echo "Collecting logs for node: $NODENAME"
         kubectl exec $POD -- chroot /host /bin/bash -c "journalctl -u kubelet" > $TMP_DIR/$NODENAME-kubelet.log
         kubectl exec $POD -- chroot /host /bin/bash -c "journalctl -u containerd" > $TMP_DIR/$NODENAME-containerd.log
+        if [[ $CSP == "eks" ]]; then
+            kubectl exec $POD -- chroot /host /bin/bash -c "cat /var/log/aws-routed-eni/ipamd*"  > $TMP_DIR/$NODENAME-ipamd.log
+        fi
         sleep 5
         kubectl delete pod $POD
     done

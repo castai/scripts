@@ -39,12 +39,3 @@ LABEL_SELECTOR="my-label=my-value" MAX_RETRIES=5 ./castai-graceful-cdd.sh
 **Capacity issues**: Scale cluster or wait - script auto-retries
 
 **Debug**: `kubectl get pods -A -o wide --field-selector spec.nodeName=<node>`
-
-## Migration
-
-| Old Variable | New Approach |
-|--------------|--------------|
-| `DELETE_NODES=true` | `--delete` flag |
-| `DRY_RUN=true` | `--dry-run` flag |
-| `MAX_RETRIES=5` | `MAX_RETRIES=5` env var |
-| Complex logging | Simple console output |
